@@ -33,11 +33,12 @@ export default function TabLayout() {
       <Tabs.Screen
         name="alarms"
         options={{
-          title: 'LOGS',
-          tabBarIcon: ({ color }) => <Ionicons name="list-outline" size={24} color={color} />,
+          title: 'WAYPOINTS',
+          tabBarIcon: ({ color }) => <Ionicons name="alarm-outline" size={24} color={color} />,
         }}
       />
     </Tabs>
   );
 }
+
 

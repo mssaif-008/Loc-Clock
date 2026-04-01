@@ -123,10 +123,12 @@ export default function RadarScreen() {
       
       setIsModalVisible(false);
       addLog("WAYPOINT_SECURED_AND_TRACKING", "SUCCESS");
-    } catch (err) {
-      addLog("ERROR: SYSTEM_MEMORY_WRITE_FAILURE", "ERROR");
+    } catch (err: any) {
+      const msg = err.message || "SYSTEM_MEMORY_WRITE_FAILURE";
+      addLog(`ERROR: ${msg.toUpperCase()}`, "ERROR");
     }
   };
+
 
   const currentDistance = userLocation && targetLocation 
     ? haversineDistance(
@@ -153,22 +155,39 @@ export default function RadarScreen() {
         <View style={styles.header}>
           <View>
             <Text style={styles.appTitle}>WAYPOINT{WAYPOINT_CURSOR}</Text>
-            <Text style={styles.appSubtitle}>OPERATIONAL_STATUS: {isTracking ? 'ACTIVE' : 'IDLE'}</Text>
+            <TouchableOpacity 
+              style={styles.statusBadge} 
+              onPress={() => setIsLogOpen(!isLogOpen)}
+            >
+              <View style={[styles.statusDot, isTracking && { backgroundColor: colors.accent }]} />
+              <Text style={styles.appSubtitle}>
+                {isTracking ? 'SYSTEM_ACTIVE' : 'STANDBY_MODE'}
+              </Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.pingButton} onPress={() => mapRef.current?.animateToRegion?.({
-            latitude: userLocation?.coords.latitude || 0,
-            longitude: userLocation?.coords.longitude || 0,
-            latitudeDelta: 0.05,
-            longitudeDelta: 0.05,
-          })}>
-            <Ionicons name="navigate-circle-outline" size={32} color={colors.accent} />
-          </TouchableOpacity>
+          
+          <View style={styles.headerActions}>
+            <TouchableOpacity 
+              style={styles.iconButton} 
+              onPress={() => setIsLogOpen(!isLogOpen)}
+            >
+              <Ionicons name="terminal-outline" size={20} color={isLogOpen ? colors.accent : colors.textMuted} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton} onPress={() => mapRef.current?.animateToRegion?.({
+              latitude: userLocation?.coords.latitude || 0,
+              longitude: userLocation?.coords.longitude || 0,
+              latitudeDelta: 0.05,
+              longitudeDelta: 0.05,
+            })}>
+              <Ionicons name="navigate-circle-outline" size={28} color={colors.accent} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.searchContainer}>
           <TextInput
             style={styles.searchInput}
-            placeholder="SEARCH_COORDINATES..."
+            placeholder="Search destination..."
             placeholderTextColor={colors.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -208,7 +227,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    padding: 20,
+    padding: 24,
   },
   header: {
     flexDirection: 'row',
@@ -216,28 +235,44 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginTop: Platform.OS === 'android' ? 40 : 0,
   },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  iconButton: {
+    padding: 4,
+  },
   appTitle: {
     fontFamily: typography.display,
     fontSize: 48,
-    color: colors.accent,
+    color: colors.text,
     letterSpacing: -1,
+  },
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: -4,
+  },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.textMuted,
   },
   appSubtitle: {
     fontFamily: typography.mono,
-    fontSize: 10,
+    fontSize: 9,
     color: colors.textMuted,
     letterSpacing: 2,
-    marginTop: -4,
-  },
-  pingButton: {
-    padding: 8,
   },
   searchContainer: {
-    marginTop: 20,
-    backgroundColor: 'rgba(10, 10, 10, 0.8)',
+    marginTop: 24,
+    backgroundColor: 'rgba(10, 10, 10, 0.9)',
     borderWidth: 1,
     borderColor: colors.border,
-    height: 48,
+    height: 52,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
@@ -252,4 +287,5 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
   },
 });
+
 

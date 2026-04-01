@@ -25,151 +25,79 @@ export const AlarmCard: React.FC<AlarmCardProps> = ({ alarm, onDelete, onToggle 
   const isTriggered = alarm.status === 'TRIGGERED';
 
   return (
-    <View style={[
-      styles.container, 
-      isArmed && styles.containerArmed,
-      isTriggered && styles.containerTriggered
-    ]}>
-      <View style={styles.leftBorder} />
-      
-      <View style={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.destName} numberOfLines={1}>{alarm.destination.name}</Text>
-          <View style={[styles.statusBadge, isArmed && styles.statusBadgeArmed, isTriggered && styles.statusBadgeTriggered]}>
-            <Text style={styles.statusText}>{alarm.status}</Text>
-          </View>
-        </View>
-
-        <View style={styles.details}>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>RADIUS</Text>
-            <Text style={styles.detailValue}>{formatDistance(alarm.radius)}</Text>
-          </View>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>COORDS</Text>
-            <Text style={styles.detailValue}>{alarm.destination.latitude.toFixed(4)}, {alarm.destination.longitude.toFixed(4)}</Text>
-          </View>
-        </View>
-
-        <View style={styles.actions}>
-          <TouchableOpacity 
-            style={styles.actionButton} 
-            onPress={() => onToggle(alarm.id)}
-          >
-            <Ionicons 
-              name={isArmed ? "pause-outline" : "play-outline"} 
-              size={18} 
-              color={isArmed ? colors.textMuted : colors.accent} 
-            />
-            <Text style={[styles.actionText, !isArmed && { color: colors.accent }]}>
-              {isArmed ? 'DEACTIVATE' : 'RE-ARM'}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.actionButton} 
-            onPress={() => onDelete(alarm.id)}
-          >
-            <Ionicons name="trash-outline" size={18} color={colors.danger} />
-            <Text style={[styles.actionText, { color: colors.danger }]}>DELETE</Text>
-          </TouchableOpacity>
-        </View>
+    <TouchableOpacity 
+      activeOpacity={0.7} 
+      onPress={() => onToggle(alarm.id)}
+      style={[
+        styles.container, 
+        isTriggered && styles.containerTriggered
+      ]}
+    >
+      <View style={styles.mainInfo}>
+        <Text style={styles.radiusText}>{formatDistance(alarm.radius)}</Text>
+        <Text style={styles.destName} numberOfLines={1}>{alarm.destination.name}</Text>
       </View>
-    </View>
+      
+      <View style={styles.rightSection}>
+        <TouchableOpacity 
+          style={styles.toggleArea} 
+          onPress={() => onToggle(alarm.id)}
+        >
+          <Ionicons 
+            name={isArmed ? "radio-button-on" : "radio-button-off"} 
+            size={28} 
+            color={isArmed ? colors.accent : colors.textMuted} 
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.deleteButton} 
+          onPress={() => onDelete(alarm.id)}
+        >
+          <Ionicons name="close-circle-outline" size={20} color={colors.textMuted} />
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginBottom: 12,
-    flexDirection: 'row',
-    overflow: 'hidden',
-  },
-  containerArmed: {
-    borderColor: colors.accentDim,
-  },
-  containerTriggered: {
-    borderColor: colors.danger,
-    backgroundColor: 'rgba(255, 59, 59, 0.05)',
-  },
-  leftBorder: {
-    width: 4,
-    backgroundColor: colors.border,
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    paddingVertical: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  containerTriggered: {
+    backgroundColor: 'rgba(255, 59, 59, 0.05)',
+  },
+  mainInfo: {
+    flex: 1,
+  },
+  radiusText: {
+    fontFamily: typography.display,
+    fontSize: 42,
+    color: colors.accent,
+    marginBottom: -4,
   },
   destName: {
     fontFamily: typography.display,
-    fontSize: 20,
+    fontSize: 18,
     color: colors.text,
-    flex: 1,
-    marginRight: 8,
+    opacity: 0.8,
   },
-  statusBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderWidth: 1,
-    borderColor: colors.textMuted,
-  },
-  statusBadgeArmed: {
-    borderColor: colors.accent,
-    backgroundColor: 'rgba(200, 245, 90, 0.1)',
-  },
-  statusBadgeTriggered: {
-    borderColor: colors.danger,
-    backgroundColor: 'rgba(255, 59, 59, 0.2)',
-  },
-  statusText: {
-    fontFamily: typography.mono,
-    fontSize: 8,
-    letterSpacing: 1,
-    color: colors.text,
-  },
-  details: {
-    flexDirection: 'row',
-    gap: 24,
-    marginBottom: 16,
-  },
-  detailItem: {},
-  detailLabel: {
-    fontFamily: typography.mono,
-    fontSize: 8,
-    color: colors.textMuted,
-    marginBottom: 2,
-  },
-  detailValue: {
-    fontFamily: typography.mono,
-    fontSize: 11,
-    color: colors.text,
-  },
-  actions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 16,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.05)',
-    paddingTop: 12,
-  },
-  actionButton: {
+  rightSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 16,
   },
-  actionText: {
-    fontFamily: typography.mono,
-    fontSize: 9,
-    letterSpacing: 1,
-    color: colors.textMuted,
+  toggleArea: {
+    padding: 8,
+  },
+  deleteButton: {
+    padding: 8,
   },
 });
+

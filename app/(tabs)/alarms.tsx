@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, typography } from '../../constants/theme';
 import { AlarmCard } from '../../components/AlarmCard';
-import { NoiseOverlay } from '../../components/NoiseOverlay';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -17,7 +16,7 @@ export default function AlarmsScreen() {
   const loadAlarms = async () => {
     const stored = await AsyncStorage.getItem('waypoint_alarms');
     if (stored) {
-      setAlarms(JSON.parse(stored).reverse()); // Newest first
+      setAlarms(JSON.parse(stored).reverse());
     }
   };
 
@@ -40,11 +39,11 @@ export default function AlarmsScreen() {
 
   return (
     <View style={styles.container}>
-      <NoiseOverlay />
+      <StatusBar barStyle="light-content" />
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
-          <Text style={styles.title}>DEPLOYMENT_LOGS</Text>
-          <Text style={styles.subtitle}>ACTIVE_GEOFENCE_REGISTRY</Text>
+          <Text style={styles.title}>Waypoints</Text>
+          <Text style={styles.subtitle}>{alarms.length} ACTIVE_SENSORS</Text>
         </View>
 
         <FlatList
@@ -60,8 +59,8 @@ export default function AlarmsScreen() {
           )}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Ionicons name="scan-outline" size={48} color={colors.border} />
-              <Text style={styles.emptyText}>NO_ACTIVE_WAYPOINTS_DETECTED</Text>
+              <Ionicons name="radio-outline" size={48} color={colors.border} />
+              <Text style={styles.emptyText}>NO_WAYPOINTS_DEFINED</Text>
             </View>
           }
         />
@@ -84,26 +83,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: 24,
-    paddingTop: 40,
+    padding: 30,
+    paddingTop: 50,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   title: {
     fontFamily: typography.display,
-    fontSize: 32,
-    color: colors.accent,
+    fontSize: 48,
+    color: colors.text,
     letterSpacing: -1,
   },
   subtitle: {
     fontFamily: typography.mono,
     fontSize: 10,
-    color: colors.textMuted,
+    color: colors.accent,
     letterSpacing: 2,
     marginTop: 4,
   },
   listContent: {
-    padding: 20,
+    paddingHorizontal: 30,
     paddingBottom: 100,
   },
   emptyContainer: {
@@ -128,3 +127,4 @@ const styles = StyleSheet.create({
     pointerEvents: 'none',
   },
 });
+
