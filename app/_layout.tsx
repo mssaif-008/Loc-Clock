@@ -1,33 +1,36 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import * as Location from 'expo-location';
+import * as Notifications from 'expo-notifications';
+import { colors } from '../constants/theme';
+import { 
+  PlayfairDisplay_700Bold 
+} from '@expo-google-fonts/playfair-display';
+import { 
+  IBMPlexMono_400Regular, 
+  IBMPlexMono_700Bold 
+} from '@expo-google-fonts/ibm-plex-mono';
 
-import { useColorScheme } from '@/components/useColorScheme';
+// Crucial: Import the tracking hook/task so it registers with TaskManager
+import '../hooks/useLocationTracking';
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
+    PlayfairDisplay_700Bold,
+    IBMPlexMono_400Regular,
+    IBMPlexMono_700Bold,
   });
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -42,18 +45,16 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+    <ThemeProvider value={DarkTheme}>
+      <Stack screenOptions={{ 
+        headerShown: false,
+        contentStyle: { backgroundColor: colors.bg }
+      }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="alarm-trigger" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
       </Stack>
     </ThemeProvider>
   );
 }
+
